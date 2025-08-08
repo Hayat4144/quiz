@@ -1,0 +1,55 @@
+{
+    "extends": "@workspace/typescript-config/base.json",
+    "compilerOptions": {
+        "lib": [
+            "ES2015"
+        ],
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "baseUrl": ".",
+        "paths": {
+            "@workspace/*": [
+                "../../packages/*/dist"
+            ],
+            "@jobs/*": [
+                "src/jobs/*"
+            ],
+            "@queues/*": [
+                "src/queues/*"
+            ],
+            "@utils/*": [
+                "src/utils/*"
+            ],
+            "@middlewares/*": [
+                "src/middlewares/*"
+            ],
+            "@config/*": [
+                "src/config/*"
+            ],
+            "@models/*": [
+                "src/models/*"
+            ],
+            "@controller/*": [
+                "src/controller/*"
+            ],
+            "@customtype/*": [
+                "src/types/*"
+            ],
+            "@services/*": [
+                "src/services/*"
+            ],
+            "@db/*": [
+                "src/db/*"
+            ],
+            "@validation/*": [
+                "src/validation/*"
+            ]
+        }
+    },
+    "exclude": [
+        "node_modules"
+    ],
+    "include": [
+        "src"
+    ]
+}

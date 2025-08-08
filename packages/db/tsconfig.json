@@ -1,0 +1,31 @@
+{
+    "extends": "@workspace/typescript-config/base.json",
+    "compilerOptions": {
+        "lib": [
+            "es2022"
+        ],
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "baseUrl": "./src",
+        "paths": {
+            "@utils/*": [
+                "utils/*"
+            ],
+            "@config/*": [
+                "config/*"
+            ],
+            "@services/*": [
+                "services/*"
+            ],
+            "@db/*": [
+                "db/*"
+            ]
+        }
+    },
+    "exclude": [
+        "node_modules"
+    ],
+    "include": [
+        "src"
+    ]
+}

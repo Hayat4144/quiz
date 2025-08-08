@@ -1,0 +1,37 @@
+{
+  "name": "@workspace/db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "pnpm run clean && tsc && tsc-alias",
+    "clean": "rm -rf dist",
+    "dev": "tsc -w",
+    "lint": "eslint \"src/**/*.ts*\"",
+    "generate": "drizzle-kit generate",
+    "push": "drizzle-kit push",
+    "pull": "npx drizzle-kit pull",
+    "migrate": "npx drizzle-kit migrate",
+    "studio": "npx drizzle-kit studio"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.4.1",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "drizzle-orm": "^0.43.1",
+    "pg": "^8.16.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.2",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "drizzle-kit": "^0.31.1",
+    "esbuild": "^0.25.4",
+    "esbuild-register": "^3.6.0",
+    "eslint": "^9.20.1",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.8.3"
+  }
+}

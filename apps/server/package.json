@@ -1,0 +1,32 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Main Server application",
+  "scripts": {
+    "build": "npm run clean && tsc && tsc-alias",
+    "clean": "rm -rf dist",
+    "dev": "nodemon --exec \"node -r esbuild-register ./src/index.ts\" -e .ts",
+    "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
+    "start": "node dist/index.js",
+    "lint:fix": "eslint -- --fix"
+  },
+  "dependencies": {
+    "@workspace/db": "workspace:*",
+    "@workspace/logger": "workspace:*",
+    "express": "^5.1.0",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.2",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^20",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "esbuild": "^0.25.4",
+    "esbuild-register": "^3.6.0",
+    "eslint": "^9.20.1",
+    "nodemon": "^3.1.10",
+    "typescript": "^5.8.3"
+  },
+  "packageManager": "pnpm@10.4.1"
+}
