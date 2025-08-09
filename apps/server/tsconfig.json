@@ -11,6 +11,9 @@
             "@workspace/*": [
                 "../../packages/*/dist"
             ],
+            "@routes/*": [
+                "src/routes/*"
+            ],
             "@jobs/*": [
                 "src/jobs/*"
             ],

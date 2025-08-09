@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npm run clean && tsc && tsc-alias",
     "clean": "rm -rf dist",
-    "dev": "nodemon --exec \"node -r esbuild-register ./src/index.ts\" -e .ts",
+    "dev": "nodemon --env-file=.env --exec \"node -r esbuild-register ./src/index.ts\" -e .ts",
     "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
     "start": "node dist/index.js",
     "lint:fix": "eslint -- --fix"
@@ -13,11 +13,15 @@
   "dependencies": {
     "@workspace/db": "workspace:*",
     "@workspace/logger": "workspace:*",
+    "bcrypt": "^6.0.0",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.9",
     "@types/node": "^20",
     "@workspace/eslint-config": "workspace:*",
