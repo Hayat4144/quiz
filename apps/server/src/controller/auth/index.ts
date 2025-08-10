@@ -1,5 +1,5 @@
 import { httpStatus, httpStatusCode } from "@customtype/http";
-import { createUser, getUserByEmail } from "@services/userService";
+import { createUser, getUserByEmail } from "@services/user-service";
 import ApiError from "@utils/api-error";
 import asyncHandler from "@utils/async-handlar";
 import { Request, Response } from "express";

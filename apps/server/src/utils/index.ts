@@ -9,3 +9,5 @@ export const getFields = <T extends Table>(
     fields.map((field) => [field, allColumns[field]]),
   ) as Pick<typeof allColumns, keyof typeof allColumns>;
 };
+
+export const skip = (page: number, perRow: number) => (page - 1) * perRow;

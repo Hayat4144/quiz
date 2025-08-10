@@ -1,6 +1,7 @@
 import { httpStatus } from "@customtype/http";
 import ErrorMiddleware from "@middlewares/error-middleware";
 import authRouter from "@routes/auth";
+import quizRouter from "@routes/quiz";
 import express, { type Express, Request, Response } from "express";
 import morgan from "morgan";
 
@@ -12,8 +13,6 @@ const startServer = (): Express => {
   app.use(express.urlencoded({ extended: true }));
   app.disable("x-powered-by");
 
-  console.log(process.env.JWT_SECRET);
-
   app.get("/", (req: Request, res: Response) => {
     res.status(200).json({
       status: httpStatus.SUCCESS,
@@ -22,6 +21,7 @@ const startServer = (): Express => {
   });
 
   app.use("/api/v1/auth", authRouter);
+  app.use("/api/v1", quizRouter);
 
   app.use(ErrorMiddleware);
 

@@ -15,6 +15,13 @@
       "when": 1754724181394,
       "tag": "0001_chubby_captain_marvel",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1754728520897,
+      "tag": "0002_mysterious_sabretooth",
+      "breakpoints": true
     }
   ]
 }
