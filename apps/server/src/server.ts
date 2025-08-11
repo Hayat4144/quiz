@@ -1,6 +1,7 @@
 import { httpStatus } from "@customtype/http";
 import ErrorMiddleware from "@middlewares/error-middleware";
 import authRouter from "@routes/auth";
+import quizQuestionRouter from "@routes/question";
 import quizRouter from "@routes/quiz";
 import express, { type Express, Request, Response } from "express";
 import morgan from "morgan";
@@ -22,6 +23,7 @@ const startServer = (): Express => {
 
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1", quizRouter);
+  app.use("/api/v1", quizQuestionRouter);
 
   app.use(ErrorMiddleware);
 
