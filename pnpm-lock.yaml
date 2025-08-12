@@ -81,6 +81,9 @@ importers:
       nodemon:
         specifier: ^3.1.10
         version: 3.1.10
+      tsc-alias:
+        specifier: ^1.8.16
+        version: 1.8.16
       typescript:
         specifier: ^5.8.3
         version: 5.8.3

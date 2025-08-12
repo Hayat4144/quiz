@@ -3,8 +3,8 @@ import { UserPayload } from "@customtype/index";
 import { getUserById } from "@services/user-service";
 import ApiError from "@utils/api-error";
 import { verifyToken, options } from "@utils/jwt";
-import logger from "@utils/logger";
 import { NextFunction, Request, Response } from "express";
+import { VerifyOptions } from "jsonwebtoken";
 
 const authMiddleware = async (
   req: Request,
@@ -16,7 +16,10 @@ const authMiddleware = async (
     if (!token)
       throw new ApiError("you are unauthorized.", httpStatusCode.UNAUTHORIZED);
 
-    const isValidatoken = await verifyToken<UserPayload>(token, options);
+    const isValidatoken = await verifyToken<UserPayload>(
+      token,
+      options as VerifyOptions,
+    );
 
     if (!isValidatoken)
       throw new ApiError(

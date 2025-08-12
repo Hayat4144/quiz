@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import jwt, { SignOptions } from "jsonwebtoken";
+import jwt, { SignOptions, VerifyOptions } from "jsonwebtoken";
 import { join } from "path";
 
 const options: SignOptions = {
@@ -25,7 +25,7 @@ const getAccessToken = async (payload: any): Promise<string> => {
   return token;
 };
 
-const verifyToken = async <T>(token: string, option: SignOptions) => {
+const verifyToken = async <T>(token: string, option: VerifyOptions) => {
   const secret = process.env.JWT_SECRET as string;
   const isVerified = jwt.verify(token, secret, option) as T;
   return isVerified;
