@@ -9,6 +9,8 @@ import {
 } from "drizzle-orm/pg-core";
 import { usersTable } from "../users";
 import { timestampFields } from "@utils/timestamp";
+import { relations } from "drizzle-orm";
+import { questionsTable } from "./questions";
 
 export const quizTable = pgTable("quizzes", {
   id: uuid("id").defaultRandom().primaryKey().notNull(),
@@ -29,6 +31,10 @@ export const quizTable = pgTable("quizzes", {
   end_at: timestamp("end_at", { withTimezone: true }),
   ...timestampFields,
 });
+
+export const quizRelations = relations(quizTable, ({ many }) => ({
+  questions: many(questionsTable),
+}));
 
 export type NewQuiz = typeof quizTable.$inferInsert;
 export type Quiz = typeof quizTable.$inferSelect;

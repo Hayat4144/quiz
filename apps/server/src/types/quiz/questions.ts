@@ -8,6 +8,11 @@ interface Question {
   order?: number | null;
 }
 
+export interface updateQuestionReqBody {
+  question: Question;
+  questionId: string;
+}
+
 export interface addQuestionReqBody {
   questions: Question[];
   quizId: string;

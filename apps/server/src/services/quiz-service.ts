@@ -1,4 +1,23 @@
-import { db, quizTable, eq, NewQuiz, and, SQL, Quiz } from "@workspace/db";
+import {
+  db,
+  quizTable,
+  eq,
+  NewQuiz,
+  and,
+  SQL,
+  Quiz,
+  questionsTable,
+} from "@workspace/db";
+
+export const getQuizQuestionsByQuizId = async (quizId: string) => {
+  const questions = await db.query.questionsTable.findMany({
+    where: eq(questionsTable.quiz_id, quizId),
+    with: {
+      options: true,
+    },
+  });
+  return questions;
+};
 
 export const editQuiz = async (filters: SQL[], data: Partial<Quiz>) => {
   const [quiz] = await db

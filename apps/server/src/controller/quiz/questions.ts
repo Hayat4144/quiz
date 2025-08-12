@@ -1,12 +1,18 @@
 import { httpStatus, httpStatusCode } from "@customtype/http";
-import { addQuestionReqBody } from "@customtype/quiz/questions";
-import { getQuizById } from "@services/quiz-service";
+import {
+  addQuestionReqBody,
+  updateQuestionReqBody,
+} from "@customtype/quiz/questions";
+import { deleteQuestion } from "@services/question-service";
+import { getQuizById, getQuizQuestionsByQuizId } from "@services/quiz-service";
 import ApiError from "@utils/api-error";
 import asyncHandler from "@utils/async-handlar";
 import { sendResponse } from "@utils/base-response";
 import { checkIsValidTeacher, isTeacherRequest } from "@utils/index";
 import {
+  and,
   db,
+  eq,
   NewQuestion,
   NewQuestionOption,
   questionOptionsTable,
@@ -14,6 +20,126 @@ import {
   TransactionRollbackError,
 } from "@workspace/db";
 import type { Request, Response } from "express";
+
+export const deleteQuizQuestion = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { quizId, questionId } = req.params;
+    if (!quizId || typeof quizId !== "string") {
+      throw new ApiError("Invalid quiz id", httpStatusCode.BAD_REQUEST);
+    }
+    if (!questionId || typeof questionId !== "string") {
+      throw new ApiError("Invalid question id", httpStatusCode.BAD_REQUEST);
+    }
+
+    isTeacherRequest(req);
+
+    const isQuizExist = await getQuizById(quizId);
+
+    if (!isQuizExist) {
+      throw new ApiError("Quiz does not exist.", httpStatusCode.BAD_REQUEST);
+    }
+
+    checkIsValidTeacher(req, isQuizExist);
+
+    const isDeleted = await deleteQuestion(questionId);
+    if (!isDeleted) {
+      throw new ApiError(
+        "Failed to delete question",
+        httpStatusCode.INTERNAL_SERVER_ERROR,
+      );
+    }
+    return sendResponse(
+      res,
+      httpStatusCode.OK,
+      httpStatus.SUCCESS,
+      "Question deleted successfully",
+    );
+  },
+);
+
+export const getQuizQuestion = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { quizId } = req.params;
+    if (!quizId || typeof quizId !== "string") {
+      throw new ApiError("Invalid quiz id", httpStatusCode.BAD_REQUEST);
+    }
+
+    isTeacherRequest(req);
+
+    const questions = await getQuizQuestionsByQuizId(quizId);
+
+    return sendResponse(
+      res,
+      httpStatusCode.OK,
+      httpStatus.SUCCESS,
+      "Question fetched successfully.",
+      questions,
+    );
+  },
+);
+
+export const updateQuestion = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { question, questionId } = req.body as updateQuestionReqBody;
+    const { quizId } = req.params;
+    if (!quizId || typeof quizId !== "string") {
+      throw new ApiError("Invalid quiz id", httpStatusCode.BAD_REQUEST);
+    }
+
+    isTeacherRequest(req);
+
+    const isQuizExist = await getQuizById(quizId);
+
+    if (!isQuizExist) {
+      throw new ApiError("Quiz does not exist.", httpStatusCode.BAD_REQUEST);
+    }
+
+    checkIsValidTeacher(req, isQuizExist);
+
+    await db.transaction(async (trx) => {
+      try {
+        const updateQuestion = await trx
+          .update(questionsTable)
+          .set(question)
+          .where(
+            and(
+              eq(questionsTable.id, questionId),
+              eq(questionsTable.quiz_id, quizId),
+            ),
+          );
+        if (updateQuestion.rowCount === 0) {
+          throw trx.rollback();
+        }
+
+        await trx
+          .delete(questionOptionsTable)
+          .where(eq(questionOptionsTable.question_id, questionId));
+
+        const optionsWithQuestionId = question.options.map((option) => ({
+          ...option,
+          question_id: questionId,
+        }));
+
+        await trx.insert(questionOptionsTable).values(optionsWithQuestionId);
+      } catch (error: any) {
+        if (error instanceof TransactionRollbackError) {
+          throw new ApiError(
+            "Please provide question id with their options",
+            httpStatusCode.BAD_REQUEST,
+          );
+        }
+        throw new ApiError(error.message, httpStatusCode.BAD_REQUEST);
+      }
+    });
+
+    return sendResponse(
+      res,
+      httpStatusCode.OK,
+      httpStatus.SUCCESS,
+      "Question updated successfully",
+    );
+  },
+);
 
 export const createQuestion = asyncHandler(
   async (req: Request, res: Response) => {
