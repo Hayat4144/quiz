@@ -2,6 +2,7 @@ import { pgTable, integer, text, boolean, uuid } from "drizzle-orm/pg-core";
 import { attemptsTable } from "./attempts";
 import { questionsTable } from "./questions";
 import { questionOptionsTable } from "./question-options";
+import { relations } from "drizzle-orm";
 
 export const attemptAnswersTable = pgTable("attempt_answers", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -18,6 +19,24 @@ export const attemptAnswersTable = pgTable("attempt_answers", {
   is_correct: boolean("is_correct"),
   points_awarded: integer("points_awarded").default(0),
 });
+
+export const attemptAnswersRelations = relations(
+  attemptAnswersTable,
+  ({ one }) => ({
+    attempt: one(attemptsTable, {
+      fields: [attemptAnswersTable.attempt_id],
+      references: [attemptsTable.id],
+    }),
+    question: one(questionsTable, {
+      fields: [attemptAnswersTable.question_id],
+      references: [questionsTable.id],
+    }),
+    selectedOption: one(questionOptionsTable, {
+      fields: [attemptAnswersTable.selected_option_id],
+      references: [questionOptionsTable.id],
+    }),
+  }),
+);
 
 export type NewAttemptAnswer = typeof attemptAnswersTable.$inferInsert;
 export type AttemptAnswer = typeof attemptAnswersTable.$inferSelect;

@@ -1,3 +1,4 @@
+import { options } from "@utils/jwt";
 import {
   db,
   quizTable,
@@ -8,6 +9,19 @@ import {
   Quiz,
   questionsTable,
 } from "@workspace/db";
+
+export async function getQuizForStudent(quizId: string) {
+  return await db.query.questionsTable.findMany({
+    where: eq(questionsTable.quiz_id, quizId),
+    with: {
+      options: {
+        columns: {
+          is_correct: false,
+        },
+      },
+    },
+  });
+}
 
 export const getQuizQuestionsByQuizId = async (quizId: string) => {
   const questions = await db.query.questionsTable.findMany({

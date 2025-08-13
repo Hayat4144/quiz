@@ -4,11 +4,16 @@ import {
   updateQuestionReqBody,
 } from "@customtype/quiz/questions";
 import { deleteQuestion } from "@services/question-service";
-import { getQuizById, getQuizQuestionsByQuizId } from "@services/quiz-service";
+import {
+  getQuizById,
+  getQuizForStudent,
+  getQuizQuestionsByQuizId,
+} from "@services/quiz-service";
 import ApiError from "@utils/api-error";
 import asyncHandler from "@utils/async-handlar";
 import { sendResponse } from "@utils/base-response";
 import { checkIsValidTeacher, isTeacherRequest } from "@utils/index";
+import logger from "@utils/logger";
 import {
   and,
   db,
@@ -20,6 +25,43 @@ import {
   TransactionRollbackError,
 } from "@workspace/db";
 import type { Request, Response } from "express";
+
+export const getQuizQuestionsForStudent = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { quizId } = req.params;
+    if (!quizId || typeof quizId !== "string") {
+      throw new ApiError("Invalid quiz id", httpStatusCode.BAD_REQUEST);
+    }
+
+    logger.info(req.user);
+
+    if (req.user.role != "student") {
+      throw new ApiError("You are not allowed.", httpStatusCode.BAD_REQUEST);
+    }
+
+    const quiz = await getQuizById(quizId);
+
+    if (!quiz?.is_published) {
+      throw new ApiError("Quiz is not published", httpStatusCode.BAD_REQUEST);
+    }
+
+    const questions = await getQuizForStudent(quizId);
+    if (!questions) {
+      throw new ApiError("Something went wrong", httpStatusCode.BAD_REQUEST);
+    }
+
+    return sendResponse(
+      res,
+      httpStatusCode.OK,
+      httpStatus.SUCCESS,
+      "Questions fetched successfully",
+      {
+        questions,
+        quiz,
+      },
+    );
+  },
+);
 
 export const deleteQuizQuestion = asyncHandler(
   async (req: Request, res: Response) => {

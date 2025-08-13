@@ -1,10 +1,13 @@
 import { httpStatus, httpStatusCode } from "@customtype/http";
 import { AnswerPayload } from "@customtype/quiz/attempts";
-import { createAttempt, getAttempts } from "@services/attempt-service";
+import {
+  createAttempt,
+  getAllAttempts,
+  getAttempts,
+} from "@services/attempt-service";
 import ApiError from "@utils/api-error";
 import asyncHandler from "@utils/async-handlar";
 import { sendResponse } from "@utils/base-response";
-import logger from "@utils/logger";
 import {
   attemptAnswersTable,
   attemptsTable,
@@ -15,6 +18,36 @@ import {
   questionsTable,
 } from "@workspace/db";
 import type { Request, Response } from "express";
+
+export const getQuizAttemtsForStudent = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { quizId } = req.params;
+
+    if (!quizId || typeof quizId !== "string") {
+      throw new ApiError("Invalid quiz id", httpStatusCode.BAD_REQUEST);
+    }
+
+    if (req.user.role == "teacher") {
+      throw new ApiError(
+        "You are not allowed to see report",
+        httpStatusCode.BAD_REQUEST,
+      );
+    }
+
+    const attempts = await getAllAttempts(quizId);
+    if (!attempts) {
+      throw new ApiError("Something went wrong", httpStatusCode.BAD_REQUEST);
+    }
+
+    return sendResponse(
+      res,
+      httpStatusCode.OK,
+      httpStatus.SUCCESS,
+      "Report fetched successfully",
+      attempts,
+    );
+  },
+);
 
 export const submitAttempt = asyncHandler(
   async (req: Request, res: Response): Promise<void> => {
@@ -63,8 +96,6 @@ export const submitAttempt = asyncHandler(
 
         totalScore += pointsAwarded;
         maxScore += question.points as number;
-
-        console.info(totalScore, maxScore);
 
         await tx.insert(attemptAnswersTable).values({
           attempt_id: attemptId,

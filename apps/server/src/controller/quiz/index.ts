@@ -7,6 +7,38 @@ import { skip } from "@utils/index";
 import { eq, ilike, quizTable, SQL } from "@workspace/db";
 import type { Request, Response } from "express";
 
+export const publishQuiz = asyncHandler(async (req: Request, res: Response) => {
+  const { quizId } = req.params;
+
+  if (!quizId && typeof quizId !== "string") {
+    throw new ApiError("Invalid quiz id", httpStatusCode.BAD_REQUEST);
+  }
+
+  if (req.user.role !== "teacher") {
+    throw new ApiError(
+      "You are not authorized to publish this quiz.",
+      httpStatusCode.FORBIDDEN,
+    );
+  }
+
+  const filters: SQL[] = [
+    eq(quizTable.id, quizId),
+    eq(quizTable.teacher_id, req.user.id),
+  ];
+
+  const quiz = await editQuiz(filters, { is_published: true });
+  if (!quiz) {
+    throw new ApiError("Quiz does not exist.", httpStatusCode.BAD_REQUEST);
+  }
+
+  return sendResponse(
+    res,
+    httpStatusCode.OK,
+    httpStatus.SUCCESS,
+    "The quiz has been published successfully.",
+  );
+});
+
 export const updateQuiz = asyncHandler(async (req: Request, res: Response) => {
   const { title, description, quizId } = req.body;
 

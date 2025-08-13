@@ -1,12 +1,18 @@
-import { createQuiz, getQuiz, updateQuiz } from "@controller/quiz";
+import { createQuiz, getQuiz, publishQuiz, updateQuiz } from "@controller/quiz";
 import authMiddleware from "@middlewares/auth-middleware";
 import type { Router } from "express";
 import express from "express";
 
 const quizRouter: Router = express.Router();
 
-quizRouter.post("/quizzes", authMiddleware, createQuiz);
-quizRouter.get("/quizzes", authMiddleware, getQuiz);
-quizRouter.put("/quizzes", authMiddleware, updateQuiz);
+// teacher routes
+quizRouter.post("/teacher/quizzes", authMiddleware, createQuiz);
+quizRouter.get("/teacher/quizzes", authMiddleware, getQuiz);
+quizRouter.put("/teacher/quizzes", authMiddleware, updateQuiz);
+quizRouter.post(
+  "/teacher/quizzes/:quizId/publish",
+  authMiddleware,
+  publishQuiz,
+);
 
 export default quizRouter;
