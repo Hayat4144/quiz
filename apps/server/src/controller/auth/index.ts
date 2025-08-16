@@ -58,18 +58,20 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError("Invalid credentials", httpStatusCode.UNAUTHORIZED);
   }
 
-  const token = await getAccessToken({
+  const userData = {
     id: user.id,
     name: user.name,
     email: user.email,
     role: user.role,
-  });
+  };
+
+  const token = await getAccessToken(userData);
 
   return sendResponse(
     res,
     httpStatusCode.OK,
     httpStatus.SUCCESS,
     "Login successful",
-    { token },
+    { user: userData, tokens: { accessToken: token } },
   );
 });
