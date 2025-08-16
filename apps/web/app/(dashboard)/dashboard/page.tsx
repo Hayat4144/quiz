@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { SignOutButton } from "@/components/signout-button";
 import { auth } from "@/auth";
+import QuizForm from "@/components/forms/quiz";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -34,6 +35,7 @@ export default async function DashboardPage() {
             </div>
           </div>
         </div>
+        <QuizForm />
       </div>
     </div>
   );
