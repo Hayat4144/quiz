@@ -52,7 +52,7 @@ const quizSchema = z.object({
 
 type QuizFormData = z.infer<typeof quizSchema>;
 
-export default function QuizForm() {
+export default function QuizQuestionForm() {
   const form = useForm<QuizFormData>({
     resolver: zodResolver(quizSchema),
     defaultValues: {
