@@ -6,10 +6,12 @@ import quizQuestionRouter from "@routes/question";
 import quizRouter from "@routes/quiz";
 import express, { type Express, Request, Response } from "express";
 import morgan from "morgan";
+import cors from "cors";
 
 const startServer = (): Express => {
   const app = express();
 
+  app.use(cors());
   app.use(morgan("tiny"));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));

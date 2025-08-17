@@ -1,16 +1,18 @@
 export interface Quiz {
   id: string;
   title: string;
-  description?: string;
+  description: string;
+  teacher_id: string;
   subject: string;
   difficulty: "easy" | "medium" | "hard";
-  timeLimit: number;
-  maxAttempts: number;
-  showAnswers: boolean;
-  status: "draft" | "published" | "archived";
-  createdAt: string;
-  updatedAt: string;
-  questionCount?: number;
+  time_limit_seconds: number;
+  attempts_allowed: number;
+  show_answers_after_submission: boolean;
+  is_published: boolean;
+  start_at: Date | null;
+  end_at: Date | null;
+  created_at: string | Date;
+  updated_at: string | Date;
 }
 
 export interface Question {

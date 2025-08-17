@@ -1,4 +1,5 @@
 "use client";
+import { apiClient } from "@/lib/api-client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -25,8 +26,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
+import { toast, toastOptions } from "@workspace/ui/components/sonner";
 import { Switch } from "@workspace/ui/components/switch";
 import { Textarea } from "@workspace/ui/components/textarea";
+import { useSession } from "next-auth/react";
 import React from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -38,18 +41,22 @@ const quizSchema = z.object({
   difficulty: z.enum(["easy", "medium", "hard"]),
   timeLimit: z.number().min(1, "Time limit must be at least 1 minute"),
   maxAttempts: z.number().min(1, "Max attempts must be at least 1"),
-  showAnswers: z.boolean(),
+  showAnswers: z.boolean({ message: "Please select an option" }),
 });
 
 type QuizFormData = z.infer<typeof quizSchema>;
 
 export default function QuizForm() {
+  const { data: session } = useSession();
+  const token = session?.user.accessToken;
+
   const form = useForm<QuizFormData>({
     resolver: zodResolver(quizSchema),
     defaultValues: {
       title: "",
       description: "",
       subject: "",
+      showAnswers: false,
     },
   });
 
@@ -67,8 +74,20 @@ export default function QuizForm() {
     "Other",
   ];
 
-  const onSubmit = (values: QuizFormData) => {
-    console.log(values);
+  const onSubmit = async (values: QuizFormData) => {
+    const { message, error } = await apiClient.post("/api/v1/teacher/quizzes", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ ...values }),
+    });
+
+    if (error) {
+      toast.error(error, toastOptions);
+    } else {
+      toast.success(message, toastOptions);
+      form.reset();
+    }
   };
 
   return (

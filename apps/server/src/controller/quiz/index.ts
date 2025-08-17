@@ -96,11 +96,24 @@ export const getQuiz = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const createQuiz = asyncHandler(async (req: Request, res: Response) => {
-  const { title, description } = req.body;
+  const {
+    title,
+    description,
+    subject,
+    difficulty,
+    showAnswers,
+    timeLimit,
+    maxAttempts,
+  } = req.body;
 
   const quiz = await createNewQuiz({
     title,
     description,
+    difficulty,
+    time_limit_seconds: timeLimit,
+    show_answers_after_submission: showAnswers,
+    subject,
+    attempts_allowed: maxAttempts,
     teacher_id: req.user.id,
   });
 
