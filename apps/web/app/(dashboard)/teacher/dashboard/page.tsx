@@ -72,8 +72,6 @@ export default async function DashboardPage() {
     return <div className="text-red">{error}</div>;
   }
 
-  console.log(data);
-
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-8">

@@ -16,6 +16,7 @@ import {
 } from "@workspace/ui/components/dropdown-menu";
 import { Quiz } from "@/types/quiz";
 import Link from "next/link";
+import PublishQuiz from "./publish-quiz";
 
 interface QuizCardProps {
   quiz: Quiz;
@@ -89,29 +90,20 @@ const QuizCard = ({ quiz }: QuizCardProps) => {
 
       <CardFooter className="flex gap-2 pt-0">
         <Button variant="outline" size="sm" className="flex-1" asChild>
-          <Link href={`/teacher/quizzes/${quiz.id}/edit`}>
+          <Link href={`/teacher/quizzes/${quiz.id}/edit`} prefetch={true}>
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </Link>
         </Button>
-        <Button
-          variant="secondary"
-          size="sm"
-          // onClick={() => onAddQuestions(quiz.id)}
-          className="flex-1"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Questions
+        <Button variant="secondary" size="sm" className="flex-1" asChild>
+          <Link href={`/teacher/quizzes/${quiz.id}/questions`} prefetch={true}>
+            <Plus className="mr-2 h-4 w-4" />
+            Questions
+          </Link>
         </Button>
+
         {!quiz.is_published && (
-          <Button
-            variant="default"
-            size="sm"
-            // onClick={() => onPublish(quiz.id)}
-            className="flex-1"
-          >
-            Publish
-          </Button>
+          <PublishQuiz quizId={quiz.id} title={quiz.title} />
         )}
       </CardFooter>
     </Card>
