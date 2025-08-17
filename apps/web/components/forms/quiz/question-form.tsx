@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { Fragment, useEffect, useState, useTransition } from "react";
 import * as z from "zod";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +23,7 @@ import {
   ArrowLeft,
   Badge,
   CheckCircle,
+  Loader2,
   Plus,
   Save,
   Trash2,
@@ -34,6 +35,10 @@ import {
   RadioGroupItem,
   RadioGroup,
 } from "@workspace/ui/components/radio-group";
+import { useParams } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { toast, toastOptions } from "@workspace/ui/components/sonner";
+import { apiClient } from "@/lib/api-client";
 
 const questionSchema = z.object({
   question: z.string().min(10, "Question must be at least 10 characters"),
@@ -67,6 +72,11 @@ export default function QuizQuestionForm() {
     },
   });
 
+  const [isPending, startTransition] = useTransition();
+  const { data: session } = useSession();
+  const token = session?.user.accessToken;
+  const { quizId } = useParams();
+
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "questions",
@@ -81,10 +91,41 @@ export default function QuizQuestionForm() {
     });
   };
 
-  const onSubmit = () => {};
+  const onSubmit = (values: QuizFormData) => {
+    if (!quizId || !token) {
+      return toast.error("Quiz does not exist.");
+    }
+    startTransition(async () => {
+      const transformedQuestions = values.questions.map((question) => {
+        const transformOptions = question.options.map((item) => {
+          return {
+            text: item,
+            is_correct: item === question.options[question.correctAnswer],
+          };
+        });
+        return { ...question, options: transformOptions };
+      });
+
+      const { error, message } = await apiClient.post(
+        `/api/v1/teacher/quizzes/${quizId}/questions`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ quizId, questions: transformedQuestions }),
+        },
+      );
+
+      if (error) {
+        toast.error(error, toastOptions);
+      } else {
+        toast.success(message, toastOptions);
+      }
+    });
+  };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto  py-8 max-w-4xl">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Header with navigation and actions */}
@@ -105,9 +146,19 @@ export default function QuizQuestionForm() {
                 <Plus className="h-4 w-4" />
                 Add Question
               </Button>
-              <Button type="submit" className="gap-2">
-                <Save className="h-4 w-4" />
-                Save Quiz
+              <Button type="submit" disabled={isPending} className="gap-2">
+                {isPending ? (
+                  <Fragment>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Please wait...
+                  </Fragment>
+                ) : (
+                  <Fragment>
+                    {" "}
+                    <Save className="h-4 w-4" />
+                    Save Questions
+                  </Fragment>
+                )}
               </Button>
             </div>
           </div>
@@ -116,7 +167,7 @@ export default function QuizQuestionForm() {
           <div className="space-y-6">
             {fields.map((field, index) => (
               <Card key={field.id} className="overflow-hidden">
-                <CardHeader className="bg-muted/50 p-4">
+                <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg font-semibold">
                       Question {index + 1}
@@ -135,7 +186,7 @@ export default function QuizQuestionForm() {
                     )}
                   </div>
                 </CardHeader>
-                <CardContent className="p-6 space-y-6">
+                <CardContent className="space-y-6">
                   {/* Question Text */}
                   <FormField
                     control={form.control}

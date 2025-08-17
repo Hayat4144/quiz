@@ -15,14 +15,19 @@ export interface Quiz {
   updated_at: string | Date;
 }
 
+export interface QuestionOption {
+  id: string;
+  questionId: string;
+  text: string;
+  is_correct: boolean;
+}
+
 export interface Question {
   id: string;
   quizId: string;
   question: string;
-  options: string[];
-  correctAnswer: number;
+  options: QuestionOption[];
   explanation?: string;
-  order: number;
 }
 
 export interface QuizAttempt {
