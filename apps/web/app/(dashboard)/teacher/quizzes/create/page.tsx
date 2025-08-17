@@ -1,4 +1,4 @@
-import QuizForm from "@/components/forms/quiz/add-quiz";
+import QuizForm from "@/components/forms/quiz/quiz-form";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { buttonVariants } from "@workspace/ui/components/button";
@@ -21,7 +21,7 @@ export default function page() {
           </div>
         </div>
         <div className="grid gap-6"></div>
-        <QuizForm />
+        <QuizForm action="add" />
       </div>
     </div>
   );

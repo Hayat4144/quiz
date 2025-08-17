@@ -4,8 +4,40 @@ import ApiError from "@utils/api-error";
 import asyncHandler from "@utils/async-handlar";
 import { sendResponse } from "@utils/base-response";
 import { skip } from "@utils/index";
-import { eq, ilike, quizTable, SQL } from "@workspace/db";
+import { db, eq, ilike, quizTable, SQL } from "@workspace/db";
 import type { Request, Response } from "express";
+
+export const getQuizById = asyncHandler(async (req: Request, res: Response) => {
+  const { quizId } = req.params;
+  let { withQuestion } = req.query;
+
+  if (withQuestion && typeof withQuestion == "string") {
+    withQuestion = JSON.parse(withQuestion.toLowerCase());
+  }
+
+  if (!quizId || typeof quizId !== "string") {
+    throw new ApiError("Invalid quiz id", httpStatusCode.BAD_REQUEST);
+  }
+
+  const quiz = await db.query.quizTable.findFirst({
+    where: eq(quizTable.id, quizId),
+    with: {
+      questions: withQuestion ? true : undefined,
+    },
+  });
+
+  if (!quiz) {
+    throw new ApiError("Quiz does not exist.", httpStatusCode.BAD_REQUEST);
+  }
+
+  return sendResponse(
+    res,
+    httpStatusCode.OK,
+    httpStatus.SUCCESS,
+    "Quiz fetched successfully.",
+    quiz,
+  );
+});
 
 export const publishQuiz = asyncHandler(async (req: Request, res: Response) => {
   const { quizId } = req.params;
@@ -40,7 +72,16 @@ export const publishQuiz = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const updateQuiz = asyncHandler(async (req: Request, res: Response) => {
-  const { title, description, quizId } = req.body;
+  const {
+    title,
+    description,
+    subject,
+    difficulty,
+    showAnswers,
+    timeLimit,
+    maxAttempts,
+    quizId,
+  } = req.body;
 
   if (req.user.role !== "teacher") {
     throw new ApiError(
@@ -54,7 +95,15 @@ export const updateQuiz = asyncHandler(async (req: Request, res: Response) => {
     eq(quizTable.teacher_id, req.user.id),
   ];
 
-  const quiz = await editQuiz(filters, { title, description });
+  const quiz = await editQuiz(filters, {
+    title,
+    description,
+    difficulty,
+    time_limit_seconds: timeLimit,
+    show_answers_after_submission: showAnswers,
+    subject,
+    attempts_allowed: maxAttempts,
+  });
   if (!quiz) {
     throw new ApiError("Quiz does not exist.", httpStatusCode.BAD_REQUEST);
   }

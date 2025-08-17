@@ -1,4 +1,10 @@
-import { createQuiz, getQuiz, publishQuiz, updateQuiz } from "@controller/quiz";
+import {
+  createQuiz,
+  getQuiz,
+  getQuizById,
+  publishQuiz,
+  updateQuiz,
+} from "@controller/quiz";
 import authMiddleware from "@middlewares/auth-middleware";
 import type { Router } from "express";
 import express from "express";
@@ -9,6 +15,7 @@ const quizRouter: Router = express.Router();
 quizRouter.post("/teacher/quizzes", authMiddleware, createQuiz);
 quizRouter.get("/teacher/quizzes", authMiddleware, getQuiz);
 quizRouter.put("/teacher/quizzes", authMiddleware, updateQuiz);
+quizRouter.get("/teacher/quizzes/:quizId", authMiddleware, getQuizById);
 quizRouter.post(
   "/teacher/quizzes/:quizId/publish",
   authMiddleware,

@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import { Quiz } from "@/types/quiz";
+import Link from "next/link";
 
 interface QuizCardProps {
   quiz: Quiz;
@@ -46,11 +47,11 @@ const QuizCard = ({ quiz }: QuizCardProps) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem
-              // onClick={() => onView(quiz.id)}
-              >
-                <Eye className="mr-2 h-4 w-4" />
-                View Quiz
+              <DropdownMenuItem asChild>
+                <Link href={`/teacher/quizzes/${quiz.id}`}>
+                  <Eye className="mr-2 h-4 w-4" />
+                  View Quiz
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem
                 // onClick={() => onDelete(quiz.id)}
@@ -87,14 +88,11 @@ const QuizCard = ({ quiz }: QuizCardProps) => {
       </CardContent>
 
       <CardFooter className="flex gap-2 pt-0">
-        <Button
-          variant="outline"
-          size="sm"
-          // onClick={() => onEdit(quiz.id)}
-          className="flex-1"
-        >
-          <Edit className="mr-2 h-4 w-4" />
-          Edit
+        <Button variant="outline" size="sm" className="flex-1" asChild>
+          <Link href={`/teacher/quizzes/${quiz.id}/edit`}>
+            <Edit className="mr-2 h-4 w-4" />
+            Edit
+          </Link>
         </Button>
         <Button
           variant="secondary"

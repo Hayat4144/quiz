@@ -1,5 +1,6 @@
 "use client";
 import { apiClient } from "@/lib/api-client";
+import { Quiz } from "@/types/quiz";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -29,8 +30,9 @@ import {
 import { toast, toastOptions } from "@workspace/ui/components/sonner";
 import { Switch } from "@workspace/ui/components/switch";
 import { Textarea } from "@workspace/ui/components/textarea";
+import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import React from "react";
+import React, { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 
@@ -46,18 +48,40 @@ const quizSchema = z.object({
 
 type QuizFormData = z.infer<typeof quizSchema>;
 
-export default function QuizForm() {
+interface Props {
+  action: "add" | "edit";
+  quiz?: Quiz;
+}
+
+export default function QuizForm({ quiz, action = "add" }: Props) {
   const { data: session } = useSession();
+  const [isPending, startTransition] = useTransition();
   const token = session?.user.accessToken;
 
-  const form = useForm<QuizFormData>({
-    resolver: zodResolver(quizSchema),
-    defaultValues: {
+  const getDefaultValues = () => {
+    if (action === "edit" && quiz) {
+      return {
+        title: quiz.title,
+        description: quiz.description,
+        subject: quiz.subject,
+        showAnswers: quiz.show_answers_after_submission,
+        difficulty: quiz.difficulty,
+        timeLimit: quiz.time_limit_seconds,
+        maxAttempts: quiz.attempts_allowed,
+      };
+    }
+
+    return {
       title: "",
       description: "",
       subject: "",
       showAnswers: false,
-    },
+    };
+  };
+
+  const form = useForm<QuizFormData>({
+    resolver: zodResolver(quizSchema),
+    defaultValues: getDefaultValues(),
   });
 
   const subjects = [
@@ -75,19 +99,44 @@ export default function QuizForm() {
   ];
 
   const onSubmit = async (values: QuizFormData) => {
-    const { message, error } = await apiClient.post("/api/v1/teacher/quizzes", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ ...values }),
-    });
+    startTransition(async () => {
+      if (action === "add") {
+        const { message, error } = await apiClient.post(
+          "/api/v1/teacher/quizzes",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ ...values }),
+          },
+        );
 
-    if (error) {
-      toast.error(error, toastOptions);
-    } else {
-      toast.success(message, toastOptions);
-      form.reset();
-    }
+        if (error) {
+          toast.error(error, toastOptions);
+        } else {
+          toast.success(message, toastOptions);
+          form.reset();
+        }
+      } else {
+        const { message, error } = await apiClient.put(
+          "/api/v1/teacher/quizzes",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              quizId: quiz?.id,
+              ...values,
+            }),
+          },
+        );
+        if (error) {
+          toast.error(error, toastOptions);
+        } else {
+          toast.success(message, toastOptions);
+        }
+      }
+    });
   };
 
   return (
@@ -265,7 +314,16 @@ export default function QuizForm() {
                 </FormItem>
               )}
             />
-            <Button>Submit</Button>
+            <Button disabled={isPending}>
+              {isPending ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  please wait...
+                </span>
+              ) : (
+                "Submit"
+              )}
+            </Button>
           </CardContent>
         </Card>
       </form>
