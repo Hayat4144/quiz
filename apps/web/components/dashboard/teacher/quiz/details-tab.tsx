@@ -8,6 +8,9 @@ import {
 } from "@workspace/ui/components/tabs";
 import { useState } from "react";
 import { QuizInfoCard } from "./info-card";
+import dynamic from "next/dynamic";
+
+const QuestionsTab = dynamic(() => import("./questions-tab"));
 
 interface Props {
   quiz: Quiz;
@@ -32,7 +35,9 @@ export default function QuizDetailsTab({ quiz }: Props) {
         <QuizInfoCard quiz={quiz} />
       </TabsContent>
 
-      <TabsContent value="questions" className="space-y-6"></TabsContent>
+      <TabsContent value="questions" className="space-y-6">
+        <QuestionsTab quizId={quiz.id} />
+      </TabsContent>
 
       <TabsContent value="results"></TabsContent>
 
