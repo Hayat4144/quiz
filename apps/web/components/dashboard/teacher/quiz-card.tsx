@@ -43,7 +43,7 @@ const QuizCard = ({ quiz }: QuizCardProps) => {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <Button variant="ghost" className="h-8 w-8 p-0">
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -89,14 +89,22 @@ const QuizCard = ({ quiz }: QuizCardProps) => {
       </CardContent>
 
       <CardFooter className="flex gap-2 pt-0">
-        <Button variant="outline" size="sm" className="flex-1" asChild>
+        <Button variant="outline" className="flex-1" asChild>
           <Link href={`/teacher/quizzes/${quiz.id}/edit`} prefetch={true}>
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </Link>
         </Button>
-        <Button variant="secondary" size="sm" className="flex-1" asChild>
-          <Link href={`/teacher/quizzes/${quiz.id}/questions`} prefetch={true}>
+        <Button
+          variant="secondary"
+          disabled={quiz.is_published}
+          className="flex-1"
+        >
+          <Link
+            href={`/teacher/quizzes/${quiz.id}/questions`}
+            prefetch={true}
+            className="flex"
+          >
             <Plus className="mr-2 h-4 w-4" />
             Questions
           </Link>

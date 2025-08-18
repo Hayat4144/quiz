@@ -48,7 +48,7 @@ export default function PublishQuiz({ quizId, title }: Props) {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button variant="default" size="sm" className="flex-1">
+        <Button variant="default" className="flex-1 cursor-pointer">
           Publish
         </Button>
       </AlertDialogTrigger>

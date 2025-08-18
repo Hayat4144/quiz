@@ -1,5 +1,6 @@
 import { Button } from "@workspace/ui/components/button";
 import { Plus } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 export default function HeroSection() {
@@ -19,9 +20,12 @@ export default function HeroSection() {
             <Button
               size="lg"
               className="bg-white/10 backdrop-blur-sm hover:bg-white/20 border border-white/20"
+              asChild
             >
-              <Plus className="mr-2 h-5 w-5" />
-              Create Your First Quiz
+              <Link href="/teacher/quizzes/create">
+                <Plus className="mr-2 h-5 w-5" />
+                Create Quiz
+              </Link>
             </Button>
           </div>
         </div>
