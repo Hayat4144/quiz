@@ -6,6 +6,11 @@ import { Button } from "@workspace/ui/components/button";
 import { Plus } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import { Quiz } from "@/types/quiz";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+};
 
 export default async function DashboardPage() {
   const session = await auth();
