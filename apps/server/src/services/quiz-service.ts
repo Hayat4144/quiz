@@ -1,4 +1,3 @@
-import { options } from "@utils/jwt";
 import {
   db,
   quizTable,
@@ -8,7 +7,20 @@ import {
   SQL,
   Quiz,
   questionsTable,
+  sql,
 } from "@workspace/db";
+
+export const quizData = async (teacherId: string) => {
+  const [result] = await db
+    .select({
+      total: sql<number>`count(*)`,
+      published: sql<number>`count(*) filter (where ${quizTable.is_published} = 'TRUE')`,
+      draft: sql<number>`count(*) filter (where ${quizTable.is_published} = 'FALSE')`,
+    })
+    .from(quizTable)
+    .where(eq(quizTable.teacher_id, teacherId));
+  return result;
+};
 
 export async function getQuizForStudent(quizId: string) {
   return await db.query.questionsTable.findMany({

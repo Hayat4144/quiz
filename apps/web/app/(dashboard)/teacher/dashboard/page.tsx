@@ -5,53 +5,7 @@ import QuizCard from "@/components/dashboard/teacher/quiz-card";
 import { Button } from "@workspace/ui/components/button";
 import { Plus } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
-
-const quizzes = [
-  {
-    id: "1",
-    title: "JavaScript Fundamentals",
-    description:
-      "Test your knowledge of JavaScript basics including variables, functions, and control structures.",
-    questionsCount: 12,
-    status: "published" as const,
-    createdAt: "2024-01-15",
-    lastModified: "2 days ago",
-    subject: "Technology",
-  },
-  {
-    id: "2",
-    title: "World History Quiz",
-    description:
-      "Explore major historical events and figures from ancient civilizations to modern times.",
-    questionsCount: 8,
-    status: "draft" as const,
-    createdAt: "2024-01-20",
-    lastModified: "1 day ago",
-    subject: "History",
-  },
-  {
-    id: "3",
-    title: "Science Trivia",
-    description:
-      "A fun quiz covering biology, chemistry, physics, and earth science topics.",
-    questionsCount: 15,
-    status: "published" as const,
-    createdAt: "2024-01-10",
-    lastModified: "1 week ago",
-    subject: "Science",
-  },
-  {
-    id: "4",
-    title: "Movie Trivia Night",
-    description:
-      "Test your knowledge of classic and modern cinema, actors, and film trivia.",
-    questionsCount: 0,
-    status: "draft" as const,
-    createdAt: "2024-01-25",
-    lastModified: "Today",
-    subject: "Entertainment",
-  },
-];
+import { Quiz } from "@/types/quiz";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -62,14 +16,21 @@ export default async function DashboardPage() {
 
   const token = session.user.accessToken;
 
-  const { data, error } = await apiClient.get("/api/v1/teacher/quizzes", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const [quizzes, quizOverview] = await Promise.all([
+    apiClient.get("/api/v1/teacher/quizzes", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+    apiClient.get(`/api/v1/teacher/quizzes/overview`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+  ]);
 
-  if (error) {
-    return <div className="text-red">{error}</div>;
+  if (quizzes.error) {
+    return <div className="text-red">{quizzes.error}</div>;
   }
 
   return (
@@ -80,31 +41,25 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 my-5">
           <div className="bg-gradient-card p-6 rounded-xl border shadow-custom-sm">
             <div className="text-2xl font-bold text-foreground">
-              {quizzes.length}
+              {quizOverview.data.total}
             </div>
             <div className="text-muted-foreground">Total Quizzes</div>
           </div>
           <div className="bg-gradient-card p-6 rounded-xl border shadow-custom-sm">
             <div className="text-2xl font-bold text-success">
-              {quizzes.filter((q) => q.status === "published").length}
+              {quizOverview.data.published}
             </div>
             <div className="text-muted-foreground">Published</div>
           </div>
           <div className="bg-gradient-card p-6 rounded-xl border shadow-custom-sm">
             <div className="text-2xl font-bold text-warning">
-              {quizzes.filter((q) => q.status === "draft").length}
+              {quizOverview.data.draft}
             </div>
             <div className="text-muted-foreground">Drafts</div>
           </div>
-          <div className="bg-gradient-card p-6 rounded-xl border shadow-custom-sm">
-            <div className="text-2xl font-bold text-primary">
-              {quizzes.reduce((sum, q) => sum + q.questionsCount, 0)}
-            </div>
-            <div className="text-muted-foreground">Total Questions</div>
-          </div>
         </div>
         {/* Quiz Grid */}
-        {quizzes.length > 0 ? (
+        {quizOverview.data.total > 0 ? (
           <div
             className={
               1 === 1
@@ -112,16 +67,16 @@ export default async function DashboardPage() {
                 : "space-y-4"
             }
           >
-            {data.map((quiz) => (
+            {quizzes.data.map((quiz: Quiz) => (
               <QuizCard key={quiz.id} quiz={quiz} />
             ))}
           </div>
         ) : (
           <div className="text-center py-16">
-            <div className="text-muted-foreground text-lg mb-4">
-              {true ? "No quizzes match your search" : "No quizzes found"}
-            </div>
-            <Button className="bg-gradient-primary hover:opacity-90">
+            <p className="text-muted-foreground text-lg mb-4">
+              No Quizzes Found
+            </p>
+            <Button>
               <Plus className="mr-2 h-4 w-4" />
               Create Your First Quiz
             </Button>

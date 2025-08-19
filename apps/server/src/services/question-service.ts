@@ -27,10 +27,10 @@ export const deleteQuestion = async (questionId: string) => {
   try {
     return await db.transaction(async (trx) => {
       const [questionDeletion, optionsDeletion] = await Promise.all([
-        trx.delete(questionsTable).where(eq(questionsTable.id, questionId)),
         trx
           .delete(questionOptionsTable)
           .where(eq(questionOptionsTable.question_id, questionId)),
+        trx.delete(questionsTable).where(eq(questionsTable.id, questionId)),
       ]);
 
       if (questionDeletion.rowCount === 0) {

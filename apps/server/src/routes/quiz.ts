@@ -3,6 +3,7 @@ import {
   getQuiz,
   getQuizById,
   publishQuiz,
+  quizOverview,
   updateQuiz,
 } from "@controller/quiz";
 import authMiddleware from "@middlewares/auth-middleware";
@@ -12,6 +13,7 @@ import express from "express";
 const quizRouter: Router = express.Router();
 
 // teacher routes
+quizRouter.get("/teacher/quizzes/overview", authMiddleware, quizOverview);
 quizRouter.post("/teacher/quizzes", authMiddleware, createQuiz);
 quizRouter.get("/teacher/quizzes", authMiddleware, getQuiz);
 quizRouter.put("/teacher/quizzes", authMiddleware, updateQuiz);

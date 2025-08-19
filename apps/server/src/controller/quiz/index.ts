@@ -1,11 +1,30 @@
 import { httpStatus, httpStatusCode } from "@customtype/http";
-import { createNewQuiz, editQuiz, searchQuiz } from "@services/quiz-service";
+import {
+  createNewQuiz,
+  editQuiz,
+  quizData,
+  searchQuiz,
+} from "@services/quiz-service";
 import ApiError from "@utils/api-error";
 import asyncHandler from "@utils/async-handlar";
 import { sendResponse } from "@utils/base-response";
 import { skip } from "@utils/index";
 import { db, eq, ilike, quizTable, SQL } from "@workspace/db";
 import type { Request, Response } from "express";
+
+export const quizOverview = asyncHandler(
+  async (req: Request, res: Response) => {
+    const teacherId = req.user.id;
+    const quiz_data = await quizData(teacherId);
+    return sendResponse(
+      res,
+      httpStatusCode.OK,
+      httpStatus.SUCCESS,
+      "Fetched",
+      quiz_data,
+    );
+  },
+);
 
 export const getQuizById = asyncHandler(async (req: Request, res: Response) => {
   const { quizId } = req.params;

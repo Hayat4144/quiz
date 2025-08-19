@@ -101,7 +101,7 @@ const QuizCard = ({ quiz }: QuizCardProps) => {
           className="flex-1"
         >
           <Link
-            href={`/teacher/quizzes/${quiz.id}/questions`}
+            href={`/teacher/quizzes/${quiz.id}/questions/new`}
             prefetch={true}
             className="flex"
           >

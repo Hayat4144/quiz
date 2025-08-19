@@ -12,6 +12,7 @@ import { Edit, Loader2, Plus, Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Fragment, useEffect, useState, useTransition } from "react";
+import DeleteQuestionDialog from "../question/delete-question-dialog";
 
 interface Props {
   quizId: string;
@@ -79,7 +80,7 @@ export default function QuestionsTab({ quizId }: Props) {
         <h2 className="text-xl font-semibold">
           Questions ({questions.length})
         </h2>
-        <Link href={`/teacher/quiz/${quizId}/questions/new`}>
+        <Link href={`/teacher/quizzes/${quizId}/questions/new`}>
           <Button className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
             Add Question
@@ -112,9 +113,7 @@ export default function QuestionsTab({ quizId }: Props) {
                       <Edit className="h-4 w-4" />
                     </Button>
                   </Link>
-                  <Button variant="outline" size="sm">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <DeleteQuestionDialog question={question} />
                 </div>
               </div>
             </CardHeader>

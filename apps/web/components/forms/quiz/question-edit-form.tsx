@@ -110,7 +110,7 @@ export default function QuestionEditForm({ question }: Props) {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex justify-between items-center gap-2">
             <div className="flex items-center gap-2">
-              <Link href={`/teacher/quizzes/${question.quizId}`}>
+              <Link href={`/teacher/quizzes/${quizId}`}>
                 <Button variant="outline" size="sm">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Quiz
