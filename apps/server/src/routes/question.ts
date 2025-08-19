@@ -1,6 +1,7 @@
 import {
   createQuestion,
   deleteQuizQuestion,
+  getQuestion,
   getQuizQuestion,
   getQuizQuestionsForStudent,
   updateQuestion,
@@ -22,6 +23,12 @@ quizQuestionRouter.get(
   "/teacher/quizzes/:quizId/questions",
   authMiddleware,
   getQuizQuestion,
+);
+
+quizQuestionRouter.get(
+  `/teacher/quizzes/:quizId/questions/:questionId`,
+  authMiddleware,
+  getQuestion,
 );
 
 quizQuestionRouter.post(

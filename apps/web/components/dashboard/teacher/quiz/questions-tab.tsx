@@ -73,8 +73,6 @@ export default function QuestionsTab({ quizId }: Props) {
     );
   }
 
-  console.log(questions);
-
   return (
     <Fragment>
       <div className="flex justify-between items-center">
@@ -108,7 +106,7 @@ export default function QuestionsTab({ quizId }: Props) {
                 </div>
                 <div className="flex gap-2">
                   <Link
-                    href={`/teacher/quiz/${quizId}/questions/${question.id}/edit`}
+                    href={`/teacher/quizzes/${quizId}/questions/${question.id}/edit`}
                   >
                     <Button variant="outline" size="sm">
                       <Edit className="h-4 w-4" />

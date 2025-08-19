@@ -19,18 +19,9 @@ import {
   CardContent,
 } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
-import {
-  ArrowLeft,
-  Badge,
-  CheckCircle,
-  Loader2,
-  Plus,
-  Save,
-  Trash2,
-} from "lucide-react";
+import { Badge, CheckCircle, Loader2, Plus, Save, Trash2 } from "lucide-react";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { Input } from "@workspace/ui/components/input";
-import Link from "next/link";
 import {
   RadioGroupItem,
   RadioGroup,
@@ -39,6 +30,7 @@ import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast, toastOptions } from "@workspace/ui/components/sonner";
 import { apiClient } from "@/lib/api-client";
+import BackButton from "@/components/dashboard/back-button";
 
 const questionSchema = z.object({
   question: z.string().min(10, "Question must be at least 10 characters"),
@@ -130,12 +122,7 @@ export default function QuizQuestionForm() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Header with navigation and actions */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/teacher/quizzes" className="flex items-center">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Quizzes
-              </Link>
-            </Button>
+            <BackButton />
             <div className="flex items-center gap-2">
               <Button
                 type="button"

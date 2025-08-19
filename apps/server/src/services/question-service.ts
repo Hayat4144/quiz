@@ -2,12 +2,26 @@ import { httpStatusCode } from "@customtype/http";
 import ApiError from "@utils/api-error";
 import logger from "@utils/logger";
 import {
+  and,
   db,
   eq,
   questionOptionsTable,
   questionsTable,
   TransactionRollbackError,
 } from "@workspace/db";
+
+export const getQuestionById = async (questionId: string, quizId: string) => {
+  const question = await db.query.questionsTable.findFirst({
+    where: and(
+      eq(questionsTable.id, questionId),
+      eq(questionsTable.quiz_id, quizId),
+    ),
+    with: {
+      options: true,
+    },
+  });
+  return question;
+};
 
 export const deleteQuestion = async (questionId: string) => {
   try {

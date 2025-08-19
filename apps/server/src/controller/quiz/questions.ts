@@ -3,7 +3,7 @@ import {
   addQuestionReqBody,
   updateQuestionReqBody,
 } from "@customtype/quiz/questions";
-import { deleteQuestion } from "@services/question-service";
+import { deleteQuestion, getQuestionById } from "@services/question-service";
 import {
   getQuizById,
   getQuizForStudent,
@@ -25,6 +25,38 @@ import {
   TransactionRollbackError,
 } from "@workspace/db";
 import type { Request, Response } from "express";
+
+export const getQuestion = asyncHandler(async (req: Request, res: Response) => {
+  const { questionId, quizId } = req.params;
+
+  if (!questionId || typeof questionId !== "string") {
+    throw new ApiError(
+      "Please provide valid question Id",
+      httpStatusCode.BAD_REQUEST,
+    );
+  }
+  if (!quizId || typeof quizId !== "string") {
+    throw new ApiError(
+      "Please provide valid quizId",
+      httpStatusCode.BAD_REQUEST,
+    );
+  }
+
+  const quiz = await getQuizById(quizId);
+  if (quiz?.is_published) {
+    throw new ApiError("quiz is published.", httpStatusCode.BAD_REQUEST);
+  }
+
+  const question = await getQuestionById(questionId, quizId);
+
+  return sendResponse(
+    res,
+    httpStatusCode.OK,
+    httpStatus.SUCCESS,
+    "Question fetched",
+    { question, quiz },
+  );
+});
 
 export const getQuizQuestionsForStudent = asyncHandler(
   async (req: Request, res: Response) => {

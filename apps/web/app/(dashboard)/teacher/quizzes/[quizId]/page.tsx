@@ -47,7 +47,7 @@ export default async function page({ params }: Props) {
             <p className="text-muted-foreground">{quiz.description}</p>
           </div>
           <div className="flex gap-2">
-            <Link href={`/teacher/quiz/${quiz.id}/edit`}>
+            <Link href={`/teacher/quizzes/${quiz.id}/edit`}>
               <Button
                 variant="outline"
                 className="flex items-center gap-2 bg-transparent cursor-pointer"

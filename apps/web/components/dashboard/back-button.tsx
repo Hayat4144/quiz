@@ -8,6 +8,7 @@ export default function BackButton() {
   const router = useRouter();
   return (
     <Button
+      type="button"
       variant="secondary"
       className="mr-4 cursor-pointer"
       onClick={() => router.back()}
